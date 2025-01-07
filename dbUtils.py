@@ -57,9 +57,50 @@ def AddParameter(portfolio_id, parameter_name ,parameter_value):
     conn.commit()
     return
 
-def GetLastID():
-    sql = "SELECT LAST_INSERT_ID() as id FROM portfolio WHERE 1"
-    cursor.execute(sql)
+def GetLastID(table):
+    sql = "SELECT LAST_INSERT_ID() as id FROM %s WHERE 1"
+    cursor.execute(sql,table,)
     portfolio_id = cursor.fetchone()
     return portfolio_id
 
+def GetStockInfo(market):
+    sql = "SELECT * FROM stocks WHERE market = %s"
+    param = (market,)
+    cursor.execute(sql, param)
+    stocks = cursor.fetchall()
+    return stocks
+
+def GetParamByID(id):
+    sql = "SELECT * FROM strategy_parameters WHERE portfolio_id = %s"
+    param = (id,)
+    cursor.execute(sql, param)
+    parameter = cursor.fetchall()
+    return parameter
+
+def GetAllRebalance(id):
+    sql = "SELECT * FROM rebalance WHERE portfolio_id = %s"
+    param = (id,)
+    cursor.execute(sql, param)
+    rebalance = cursor.fetchall()
+    return rebalance
+ 
+def AddRebalance(date, portfolio_id, market_value, returns):
+    sql="insert into rebalance (date, portfolio_id, market_value, returns) VALUES (%s,%s,%s,%s)"
+    param=(date, portfolio_id, market_value, returns,)
+    cursor.execute(sql,param)
+    conn.commit()
+    return
+
+def AddHold(rebalance_id, stock_code, hold_num):
+    sql="insert into holds (rebalance_id, stock_code, hold_num) VALUES (%s,%s,%s)"
+    param=(rebalance_id, stock_code, hold_num,)
+    cursor.execute(sql,param)
+    conn.commit()
+    return
+
+def GetHolds(id):
+    sql = "SELECT * FROM holds WHERE rebalance_id = %s"
+    param = (id,)
+    cursor.execute(sql, param)
+    rebalance = cursor.fetchall()
+    return rebalance

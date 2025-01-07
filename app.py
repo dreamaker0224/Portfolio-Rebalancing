@@ -28,7 +28,8 @@ def Home():
     if request.method == "POST":
         data = request.form
         portfolio = db.GetPortfolioByID(data['portfolios'])
-    return render_template('index.html', portfolios=portfolios, portfolio=portfolio)
+        rebalance = db.GetAllRebalance(data['portfolios'])
+    return render_template('index.html', portfolios=portfolios, portfolio=portfolio, rebalance = rebalance)
 
 @app.route("/add_portfolio", methods=['POST','GET'])
 def AddPortfolio():
@@ -41,16 +42,35 @@ def AddPortfolio():
         strategy_id = 1
     date = datetime.now().strftime("%Y-%m-%d")
     db.AddPortfolio(init_invest, date, strategy_id)
-    portfolio_id = db.GetLastID()['id']
+    portfolio_id = db.GetLastID('portfolio')['id']
     
     # 加入參數
     if portfolio_id:
         db.AddParameter(portfolio_id, "tau", tau)
         db.AddParameter(portfolio_id, "require_return", require_return)
-	
-	#第一次 rebalacing
-    if portfolio_id:
-        portfolio = db.GetPortfolioByID(portfolio_id)
-        stock = db.GetStockInfo("台灣 50")
-        
+    
     return redirect('/')
+
+@app.route("/rebalancing/<int:portfolio_id>", methods=['POST','GET'])
+def Rebalancing(portfolio_id):
+    #第一次 rebalacing
+    portfolio = db.GetPortfolioByID(portfolio_id)
+    parameters = db.GetParamByID(portfolio_id)
+    rebalance = db.GetAllRebalance(portfolio_id)
+    for i in parameters:
+        if i["parameter_name"] == "tau":
+            tau = float(i['parameter_value'])
+        elif i["parameter_name"] == "require_return":
+            require_return = float(i['parameter_value'])
+    stocks = db.GetStockInfo("台灣 50")
+    if rebalance:
+        holds = db.GetHolds(rebalance["rebalance_id"])
+    else:
+        holds = None
+    market_value, holds, date = omega.main(tau, require_return, stocks, portfolio['create_date'], holds)
+    returns = (market_value - portfolio["init_investment"])/portfolio["init_investment"]
+    db.AddRebalance(date, portfolio_id, market_value, returns)
+    rebalance_id = db.GetLastID('rebalance')['id']
+    for stock_code, hold_num in holds.items():
+        db.AddHold(rebalance_id,stock_code, hold_num)
+    return redirect("/")

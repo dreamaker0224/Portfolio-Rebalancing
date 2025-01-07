@@ -21,12 +21,6 @@
             Add Portfolio
         </button>
     </form>
-    <form action="/rebalancing" method="post">
-        <select name="portfolio" id="portfolio">
-            <option value="omega portfolio">omega portfolio</option>
-        </select>
-        <button type="submit">rebalancing</button>
-    </form>
     {% if portfolios %}
     <form action="/" method="post">
         <select name="portfolios" id="portfolios">
@@ -42,6 +36,16 @@
     <h3>initial investment：{{portfolio.init_investment}}</h3>
     <h3>model：{{portfolio.strategy_name}}</h3>
     <h3>start time：{{portfolio.create_date}}</h3>
+
+
+    <form action="/rebalancing/{{portfolio.portfolio_id}}" method="post">
+        <select name="portfolio" id="portfolio">
+            <option value="omega portfolio">omega portfolio</option>
+        </select>
+        <button type="submit">rebalancing</button>
+    </form>
+
+
     <table>
         <thead>
             <tr>
@@ -51,11 +55,14 @@
             </tr>
         </thead>
         <tbody>
+            {% for i in rebalance %}
             <tr>
-                <td>100</td>
+                <td>i.date</td>
                 <td>100</td>
                 <td>100</td>
             </tr>
+            {% endfor %}
+            
         </tbody>
     </table>
     {% endif %}
