@@ -85,8 +85,8 @@ def write_back(weights, stocks, market_value, data, date):
 
 def main(tau, require_return, stocks, date, last_holds,delta = 0.5):
     # 設定日期範圍
-    start_date = "2024-04-01"
-    end_date = "2024-06-30"
+    start_date = "2024-08-01"
+    end_date = "2024-10-31"
     
     yfinance_symbols = []
     for i in stocks:
