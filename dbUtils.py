@@ -57,11 +57,11 @@ def AddParameter(portfolio_id, parameter_name ,parameter_value):
     conn.commit()
     return
 
-def GetLastID(table):
-    sql = "SELECT LAST_INSERT_ID() as id FROM %s WHERE 1"
-    cursor.execute(sql,table,)
-    portfolio_id = cursor.fetchone()
-    return portfolio_id
+def GetLastPortfolioID():
+    sql = "SELECT * FROM portfolio WHERE 1 ORDER BY portfolio_id DESC LIMIT 1;"
+    cursor.execute(sql)
+    portfolio = cursor.fetchone()
+    return portfolio
 
 def GetStockInfo(market):
     sql = "SELECT * FROM stocks WHERE market = %s"

@@ -10,26 +10,20 @@ app = Flask(__name__, static_folder='static',static_url_path='/')
 #set a secret key to hash cookies
 app.config['SECRET_KEY'] = '123TyU%^&'
 
-#define a function wrapper to check login session
-def login_required(f):
-	@wraps(f)
-	def wrapper(*args, **kwargs):
-		loginID = session.get('loginID')
-		if not loginID:
-			return redirect('/loginPage.html')
-		return f(*args, **kwargs)
-	return wrapper
-
-
 @app.route("/", methods=['POST','GET'])
 def Home():
     portfolios = db.GetPortfolio()
     portfolio = None
     rebalance = None
+    portfolio_id = session.get("portfolio_id")
     if request.method == "POST":
         data = request.form
-        portfolio = db.GetPortfolioByID(data['portfolios'])
-        rebalance = db.GetAllRebalance(data['portfolios'])
+        session["portfolio_id"] = data['portfolios']
+        portfolio = db.GetPortfolioByID(session["portfolio_id"])
+        rebalance = db.GetAllRebalance(session["portfolio_id"])
+    if portfolio_id:
+        portfolio = db.GetPortfolioByID(portfolio_id)
+        rebalance = db.GetAllRebalance(portfolio_id)
     return render_template('index.html', portfolios=portfolios, portfolio=portfolio, rebalance = rebalance)
 
 @app.route("/add_portfolio", methods=['POST','GET'])
@@ -43,7 +37,8 @@ def AddPortfolio():
         strategy_id = 1
     date = datetime.now().strftime("%Y-%m-%d")
     db.AddPortfolio(init_invest, date, strategy_id)
-    portfolio_id = db.GetLastID('portfolio')['id']
+    portfolio = db.GetLastPortfolioID()
+    portfolio_id = portfolio["portfolio_id"]
     
     # 加入參數
     if portfolio_id:
