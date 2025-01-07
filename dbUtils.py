@@ -28,19 +28,19 @@ def add(data):
 	
 def delete(id):
 	sql="delete from 表格 where 條件"
-	cur.execute(sql,(id,))
+	cursor.execute(sql,(id,))
 	conn.commit()
 	return
 
 def update(id,data):
 	sql="update 表格 set 欄位=值,... where 條件"
-	#param=('值',...)
+	param=('值',...)
 	cursor.execute(sql,param)
 	conn.commit()
 	return
 	
 def getList():
 	sql="select 欄位,... from 表格 where 條件;"
-	#param=('值',...)
+	param=('值',...)
 	cursor.execute(sql,param)
 	return cursor.fetchall()

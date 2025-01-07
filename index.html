@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Portfolio Rebalancing</h1>
+    <form action="/add_portfolio" method="post" id="initialization">
+        <label for="init_invest">Enter Amount</label>
+        <input type="text" name="init_invest" id="init_invest" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" value=""
+            data-type="currency" placeholder="$100,000.00" required>
+        <input type="number" name="tau" id="tau" value="0" placeholder="0.01">
+        <input type="number" name="require_return" id="require_return">
+        <select name="strategy" id="strategy">
+            <option value="Omega model"></option>
+        </select>
+        <button type="submit">
+            Add Portfolio
+        </button>
+    </form>
+    <form action="/rebalancing" method="post">
+        <select name="portfolio" id="portfolio">
+            <option value="omega portfolio">omega portfolio</option>
+        </select>
+        <button type="submit">rebalancing</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>rebalance date</th>
+                <th>market value</th>
+                <th>share holds</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>100</td>
+                <td>100</td>
+                <td>100</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
