@@ -1,0 +1,23 @@
+<html><head>
+<meta charset="utf-8">
+<title>List</title></head>
+<body>
+<p>清單</p>
+<hr />
+<table width="200" border="1">
+  <tr>
+    <td>id</td>
+    <td>Job Name</td>
+	<td>Job Content</td>
+  </tr>
+    {% for rec in data %}
+	<tr>
+		<td>{{rec.id}}</td>
+		<td>{{rec.jobName}}</td>
+		<td>{{rec.jobContent}}</td>
+	</tr>
+    {% endfor %}
+</table>
+<a href="/">go Home</a>
+</body></html>
+
