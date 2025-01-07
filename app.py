@@ -23,8 +23,10 @@ def login_required(f):
 
 @app.route("/")
 def Home():
-    portfolio = db.GetPortfolio(3)
-    return render_template('index.html', portfolio = portfolio)
+    portfolios = db.GetPortfolio()
+    if request.method == "POST":
+        portfolio = db.GetPortfolioByID()
+    return render_template('index.html', portfolios=portfolios)
 
 @app.route("/add_portfolio", methods=['POST','GET'])
 def AddPortfolio():
@@ -37,4 +39,9 @@ def AddPortfolio():
         strategy_id = 1
     date = datetime.now().strftime("%Y-%m-%d")
     db.AddPortfolio(init_invest, date, strategy_id)
+    portfolio_id = db.GetLastID()['id']
+    print(portfolio_id)
+    if portfolio_id:
+        db.AddParameter(portfolio_id, "tau", tau)
+        db.AddParameter(portfolio_id, "require_return", require_return)
     return redirect('/')

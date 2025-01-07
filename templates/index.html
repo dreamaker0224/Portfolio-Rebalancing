@@ -11,10 +11,9 @@
     <h1>Portfolio Rebalancing</h1>
     <form action="/add_portfolio" method="post" id="initialization">
         <label for="init_invest">Enter Amount</label>
-        <input type="text" name="init_invest" id="init_invest" value=""
-            data-type="currency" placeholder="$100,000.00" required>
+        <input type="text" name="init_invest" id="init_invest" value="10000" data-type="currency" placeholder="$100,000.00" required>
         <input type="number" name="tau" id="tau" value="0" placeholder="0.01">
-        <input type="number" name="require_return" id="require_return">
+        <input type="number" name="require_return" value="0" id="require_return">
         <select name="strategy" id="strategy">
             <option value="omega">omega</option>
         </select>
@@ -28,10 +27,20 @@
         </select>
         <button type="submit">rebalancing</button>
     </form>
+    {% if portfolios %}
+    <form action="/" method="post">
+        <select name="portfolio" id="portfolio">
+            {% for i in portfolios %}
+            <option value="{{i.portfolio_id}}">{{i.portfolio_id}}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">選擇</button>
+    </form>
+    {% endif %}
     {% if portfolio %}
     <h2>Portfolio：{{portfolio.portfolio_id}}</h2>
     <h3>initial investment：{{portfolio.init_investment}}</h3>
-    <h3>model：{{portfolio.strategy_id}}</h3>
+    <h3>model：{{portfolio.strategy_name}}</h3>
     <h3>start time：{{portfolio.create_date}}</h3>
     <table>
         <thead>
