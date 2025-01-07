@@ -34,7 +34,7 @@ def GetPortfolio():
 	WHERE 1;
     '''
     cursor.execute(sql)
-    portfolio = cursor.fetchone()
+    portfolio = cursor.fetchall()
     return portfolio
 
 def GetPortfolioByID(id):
@@ -62,3 +62,4 @@ def GetLastID():
     cursor.execute(sql)
     portfolio_id = cursor.fetchone()
     return portfolio_id
+

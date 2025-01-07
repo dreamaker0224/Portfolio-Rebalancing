@@ -29,9 +29,9 @@
     </form>
     {% if portfolios %}
     <form action="/" method="post">
-        <select name="portfolio" id="portfolio">
+        <select name="portfolios" id="portfolios">
             {% for i in portfolios %}
-            <option value="{{i.portfolio_id}}">{{i.portfolio_id}}</option>
+            <option value="{{i.portfolio_id}}">portfolio{{i.portfolio_id}}</option>
             {% endfor %}
         </select>
         <button type="submit">選擇</button>

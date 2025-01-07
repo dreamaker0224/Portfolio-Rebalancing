@@ -21,12 +21,14 @@ def login_required(f):
 	return wrapper
 
 
-@app.route("/")
+@app.route("/", methods=['POST','GET'])
 def Home():
     portfolios = db.GetPortfolio()
+    portfolio = None
     if request.method == "POST":
-        portfolio = db.GetPortfolioByID()
-    return render_template('index.html', portfolios=portfolios)
+        data = request.form
+        portfolio = db.GetPortfolioByID(data['portfolios'])
+    return render_template('index.html', portfolios=portfolios, portfolio=portfolio)
 
 @app.route("/add_portfolio", methods=['POST','GET'])
 def AddPortfolio():
@@ -40,8 +42,15 @@ def AddPortfolio():
     date = datetime.now().strftime("%Y-%m-%d")
     db.AddPortfolio(init_invest, date, strategy_id)
     portfolio_id = db.GetLastID()['id']
-    print(portfolio_id)
+    
+    # 加入參數
     if portfolio_id:
         db.AddParameter(portfolio_id, "tau", tau)
         db.AddParameter(portfolio_id, "require_return", require_return)
+	
+	#第一次 rebalacing
+    if portfolio_id:
+        portfolio = db.GetPortfolioByID(portfolio_id)
+        stock = db.GetStockInfo("台灣 50")
+        
     return redirect('/')
