@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, session, redirect
 from functools import wraps
-from dbUtils import getList
+import dbUtils as db
+import strategy.omega as omega
+from datetime import datetime
+
 
 # creates a Flask application, specify a static folder on /
 app = Flask(__name__, static_folder='static',static_url_path='/')
@@ -18,89 +21,20 @@ def login_required(f):
 	return wrapper
 
 
-@app.route("/") 
-@login_required
-def hello(): 
-	message = "Hello, World 1"
-	return message
+@app.route("/")
+def Home():
+    portfolio = db.GetPortfolio(3)
+    return render_template('index.html', portfolio = portfolio)
 
-
-
-@app.route("/test/<string:name>/<int:id>")
-#取得網址作為參數
-def useParam(name,id):
-	return f"got name={name}, id={id} "
-
-@app.route("/edit")
-#使用server side render: template 樣板
-def h1():
-	dat={
-		"name": "大牛",
-		"content":"內容說明文字"
-	}
-	#editform.html 存在於 templates目錄下, 將dat 作為參數送進 editform.html, 名稱為 data
-	return render_template('editform.html', data=dat)
-
-@app.route("/list")
-#使用server side render: template 樣板
-def h2():
-	dat=[
-		{
-			"name": "大牛",
-			"p":"愛吃瓜"
-		},
-		{
-			"name": "小李",
-			"p":"怕榴槤"
-		},
-		{
-			"name": "",
-			"p":"ttttt"
-		},
-		{
-			"name": "老謝",
-			"p":"來者不拒"
-		}
-	]
-	return render_template('list.html', data=dat)
-
-@app.route('/input', methods=['GET', 'POST'])
-def userInput():
-	if request.method == 'POST':
-		form =request.form
-	else:
-		form= request.args
-
-	txt = form['txt']  # pass the form field name as key
-	note =form['note']
-	select = form['sel']
-	msg=f"method: {request.method} txt:{txt} note:{note} sel: {select}"
-	return msg
-
-@app.route("/listJob")
-#使用server side render: template 樣板
-def gl():
-	dat=getList()
-	return render_template('todolist.html', data=dat)
-
-#handles login request
-@app.route('/login', methods=['POST'])
-def login():
-	form =request.form
-	id = form['ID']
-	pwd =form['PWD']
-	#validate id/pwd
-	if id=='123' and pwd=='456':
-		session['loginID']=id
-		return redirect("/")
-	else:
-		session['loginID']=False
-		return redirect("/loginForm")
-
-
-@app.route('/update', methods = ['POST'])
-def update():
-    name = request.form['name']
-    content = request.form['content']
-    html = f'name = {name}, content = {content}'
-    return html
+@app.route("/add_portfolio", methods=['POST','GET'])
+def AddPortfolio():
+    data = request.form
+    init_invest = data['init_invest']
+    tau = data['tau']
+    require_return = data['require_return']
+    strategy = data['strategy']
+    if strategy == 'omega':
+        strategy_id = 1
+    date = datetime.now().strftime("%Y-%m-%d")
+    db.AddPortfolio(init_invest, date, strategy_id)
+    return redirect('/')

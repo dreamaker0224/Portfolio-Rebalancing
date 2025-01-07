@@ -6,19 +6,6 @@ import gurobipy as gp
 from gurobipy import GRB
 from datetime import datetime
 
-# 股票代碼
-stock_data = [
-    "2330", "2317", "2454", "2308", "2382", "2881", "2891", "2882", "3711",
-    "2303", "2412", "2357", "2886", "2884", "2885", "1216", "2345", "2892",
-    "3231", "3034", "6669", "2883", "2890", "2327", "2379", "3008", "5880",
-    "2880", "3661", "2603", "2002", "1101", "2887", "4938", "2207", "2301",
-    "3017", "3037", "6446", "3045", "1303", "2395", "4904", "5876", "2912",
-    "1301", "2609", "5871", "1326", "6505"
-]
-
-# 將代碼轉換為 yfinance 格式
-yfinance_symbols = [f"{code}.TW" for code in stock_data]
-
 # 設定參數
 delta = 0.5  # 風險偏好參數
 tau = 0.0  # 最低收益閾值
@@ -105,7 +92,7 @@ def write_portfolio_to_excel(weights, stocks, market_value, data, output_path):
     print(f"資料已儲存到 {output_path}")
 
 
-def initialize_excel(output_path):
+def initialize_excel(output_path, stock_data):
     """初始化 portfolio 和 hold 工作表"""
     initial_date = datetime.now().strftime("%Y-%m-%d")
     initial_market_value = 10000  # 初始投資金額

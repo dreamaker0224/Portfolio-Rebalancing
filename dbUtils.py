@@ -9,7 +9,7 @@ try:
 		password="",
 		host="localhost",
 		port=3306,
-		database="test"
+		database="portfolio"
 	)
 	#建立執行SQL指令用之cursor, 設定傳回dictionary型態的查詢結果 [{'欄位名':值, ...}, ...]
 	cursor=conn.cursor(dictionary=True)
@@ -19,28 +19,20 @@ except mysql.connector.Error as e: # mariadb.Error as e:
 	exit(1)
 
 
-def add(data):
-	sql="insert into 表格 (欄位,...) VALUES (%s,%s,...)"
-	#param=('值',...)
+def AddPortfolio(init_invest, date, strategy):
+	sql="insert into portfolio (init_investment, create_date, strategy_id) VALUES (%s,%s,%s)"
+	param=(init_invest, date, strategy,)
 	cursor.execute(sql,param)
 	conn.commit()
 	return
-	
-def delete(id):
-	sql="delete from 表格 where 條件"
-	cursor.execute(sql,(id,))
-	conn.commit()
-	return
-
-def update(id,data):
-	sql="update 表格 set 欄位=值,... where 條件"
-	param=('值',...)
-	cursor.execute(sql,param)
-	conn.commit()
-	return
-	
-def getList():
-	sql="select 欄位,... from 表格 where 條件;"
-	param=('值',...)
-	cursor.execute(sql,param)
-	return cursor.fetchall()
+def GetPortfolio(id):
+    sql = '''SELECT p.*, s.strategy_name
+	FROM portfolio p
+	JOIN strategy s ON p.strategy = s.strategy_id
+	WHERE p.portfolio_id = %s;'''
+    param=(id,)
+    cursor.execute(sql,param)
+    portfolio = cursor.fetchone()
+    return portfolio
+ 
+    
