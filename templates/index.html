@@ -38,9 +38,9 @@
     <h3>start time：{{portfolio.create_date}}</h3>
 
 
-    <form action="/rebalancing/{{portfolio.portfolio_id}}" method="post">
+    <form action="/rebalancing" method="post">
         <select name="portfolio" id="portfolio">
-            <option value="omega portfolio">omega portfolio</option>
+            <option value="{{portfolio.portfolio_id}}">omega portfolio</option>
         </select>
         <button type="submit">rebalancing</button>
     </form>
@@ -57,9 +57,9 @@
         <tbody>
             {% for i in rebalance %}
             <tr>
-                <td>i.date</td>
-                <td>100</td>
-                <td>100</td>
+                <td>{{i.date}}</td>
+                <td>{{i.market_value}}</td>
+                <td>{{i.returns}}</td>
             </tr>
             {% endfor %}
             

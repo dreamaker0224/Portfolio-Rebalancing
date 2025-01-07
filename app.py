@@ -25,6 +25,7 @@ def login_required(f):
 def Home():
     portfolios = db.GetPortfolio()
     portfolio = None
+    rebalance = None
     if request.method == "POST":
         data = request.form
         portfolio = db.GetPortfolioByID(data['portfolios'])
@@ -51,12 +52,14 @@ def AddPortfolio():
     
     return redirect('/')
 
-@app.route("/rebalancing/<int:portfolio_id>", methods=['POST','GET'])
-def Rebalancing(portfolio_id):
+@app.route("/rebalancing", methods=['POST','GET'])
+def Rebalancing():
     #第一次 rebalacing
+    form = request.form
+    portfolio_id = form['portfolio']
     portfolio = db.GetPortfolioByID(portfolio_id)
     parameters = db.GetParamByID(portfolio_id)
-    rebalance = db.GetAllRebalance(portfolio_id)
+    rebalance = db.GetLastRebalanceID(portfolio_id)
     for i in parameters:
         if i["parameter_name"] == "tau":
             tau = float(i['parameter_value'])
@@ -64,13 +67,15 @@ def Rebalancing(portfolio_id):
             require_return = float(i['parameter_value'])
     stocks = db.GetStockInfo("台灣 50")
     if rebalance:
-        holds = db.GetHolds(rebalance["rebalance_id"])
+        rebalance_id = rebalance["rebalance_id"]
+        holds = db.GetHolds(rebalance_id)
     else:
         holds = None
     market_value, holds, date = omega.main(tau, require_return, stocks, portfolio['create_date'], holds)
     returns = (market_value - portfolio["init_investment"])/portfolio["init_investment"]
     db.AddRebalance(date, portfolio_id, market_value, returns)
-    rebalance_id = db.GetLastID('rebalance')['id']
+    rebalance = db.GetLastRebalanceID(portfolio_id)
+    rebalance_id = rebalance_id = rebalance["rebalance_id"]
     for stock_code, hold_num in holds.items():
         db.AddHold(rebalance_id,stock_code, hold_num)
     return redirect("/")

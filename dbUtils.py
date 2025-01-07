@@ -83,6 +83,14 @@ def GetAllRebalance(id):
     cursor.execute(sql, param)
     rebalance = cursor.fetchall()
     return rebalance
+
+def GetLastRebalanceID(id):
+    sql = "SELECT * FROM rebalance WHERE portfolio_id = %s ORDER BY rebalance_id DESC LIMIT 1;"
+    param = (id,)
+    cursor.execute(sql, param)
+    rebalance = cursor.fetchone()
+    return rebalance
+    
  
 def AddRebalance(date, portfolio_id, market_value, returns):
     sql="insert into rebalance (date, portfolio_id, market_value, returns) VALUES (%s,%s,%s,%s)"
